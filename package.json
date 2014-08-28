@@ -26,5 +26,5 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Benedikt Arnold <benedikt.arnold@gmx.net>",
-  "license": "ISC"
+  "license": "MIT"
 }
