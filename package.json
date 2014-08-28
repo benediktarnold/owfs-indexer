@@ -1,7 +1,12 @@
 {
   "name": "owfs-indexer",
   "version": "0.0.1",
-  "description": "",
+  "description": "A small command line tool to index values from owfs to elasticsearch",
+  "keywords": [
+    "owfs",
+    "ds1820",
+    "elasticsearch"
+  ],
   "main": "index.js",
   "engines": {
     "node": "0.10"
@@ -20,6 +25,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Benedikt Arnold",
+  "author": "Benedikt Arnold <benedikt.arnold@gmx.net>",
   "license": "ISC"
 }
