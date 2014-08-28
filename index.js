@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 var Client = require("owfs").Client,
 	argv = require('optimist').argv,
 	async = require('async'),
