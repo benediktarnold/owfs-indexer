@@ -13,13 +13,14 @@
   },
   "preferGlobal": "true",
   "bin": {
-    "owfs-indexer" : "index.js"
+    "owfs-indexer": "index.js"
   },
   "dependencies": {
     "async": "^0.9.0",
     "elasticsearch": "^2.4.0",
-    "optimist": "^0.6.1",
-    "owfs": "0.0.6"
+    "minimist": "^1.1.0",
+    "owfs": "0.1.0",
+    "winston": "^0.7.3"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,16 +1,23 @@
 #! /usr/bin/env node
 
 var Client = require("owfs").Client,
-	argv = require('optimist').argv,
+	argv = require('minimist')(process.argv.slice(2)),
 	async = require('async'),
 	timers = require("timers"),
-	elasticsearch = require('elasticsearch');
+	elasticsearch = require('elasticsearch'),
+	logger = require("winston");
 
+logger.cli();
+
+if(argv.debug){
+	logger.remove(logger.transports.Console);
+	logger.add(logger.transports.Console, { level: 'debug', colorize:true });
+}
 
 var HOST = argv.host ? argv.host : 'localhost';
 var PORT = argv.port ? argv.port : 4304;
 var ESHOST = argv.searchhost ? argv.searchhost : 'localhost:9200';
-console.log("Connecting to " + HOST + ":" + PORT);
+logger.info("Connecting to " + HOST + ":" + PORT);
 
 var con = new Client(HOST, PORT);
 var es = new elasticsearch.Client({
@@ -24,9 +31,9 @@ es.ping({
 	hello: "elasticsearch!"
 }, function(error) {
 	if (error) {
-		console.error('elasticsearch cluster is down!');
+		logger.error('elasticsearch cluster is down!');
 	} else {
-		console.log('Connected to', ESHOST);
+		logger.info('Connected to', ESHOST);
 	}
 });
 
@@ -55,10 +62,10 @@ es.indices.exists({
 	}
 });
 
-console.log("Detecting devices...");
+logger.info("Detecting devices...");
 
-con.getslash("/", function(devices) {
-	console.log("Found:",devices.join(", "));
+con.getslash("/", function(error,devices) {
+	logger.info("Found:",devices.join(", "));
 	indexDevices(devices);
 });
 
@@ -66,20 +73,21 @@ function indexDevices(devices) {
 	timers.setInterval(function() {
 		//TODO other devices
 		var path = devices[0];
-		con.getslash(path, function(sensors) {
+		con.getslash(path, function(error,sensors) {
+			sensors = sensors.filter(function(sensor){return sensor.indexOf("errata") == -1});
 			async.map(sensors, function(sensor, done) {
-				//console.log("reading", sensor)
-				con.read(sensor, function(data) {
+				logger.debug("reading", sensor)
+				con.read(sensor, function(error,data) {
 					var name = sensor.split("/")[2];
 
-					done(null, {
+					done(error, {
 						key: name,
 						value: data
 					});
 				});
 			}, function(err, all) {
 				if (err) {
-					console.error("ERROR", err);
+					logger.error("ERROR", err);
 				} else {
 					var doc = {
 						path: path,
@@ -94,7 +102,9 @@ function indexDevices(devices) {
 						body: doc
 					}, function(error, response) {
 						if (error) {
-							console.log(error, response);
+							logger.error(error, response);
+						} else {
+							logger.info("written to elasticsearch",doc);
 						}
 
 					});
