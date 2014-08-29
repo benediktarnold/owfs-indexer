@@ -1,6 +1,6 @@
 {
   "name": "owfs-indexer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A small command line tool to index values from owfs to elasticsearch",
   "keywords": [
     "owfs",
